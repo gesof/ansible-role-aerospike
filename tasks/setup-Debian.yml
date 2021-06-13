@@ -32,4 +32,4 @@
   shell: asinstall
   args:
     chdir: "/tmp/aerospike-server-community-{{ aerospike_version }}-ubuntu{{ ansible_distribution_version }}"
-  when: aerospike_source_unpack|changed
+  when: aerospike_source_unpack.changed
