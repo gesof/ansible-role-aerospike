@@ -1,0 +1,36 @@
+---
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: Ensure Aerospike config path exists.
+  file:
+    path: "{{ aerospike_config_path }}"
+    state: directory
+
+- name: Ensure aerospike services are started and enabled on startup.
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  with_items: "{{ aerospike_enabled_services | default([]) }}"
+  when: >
+    aerospike_enabled_services and (ansible_os_family != 'Debian' or
+    (ansible_os_family != 'Debian' and ansible_distribution_release != "xenial"))
+
+# See: https://github.com/ansible/ansible/issues/22303
+- name: Ensure aerospike services are started and enabled on startup (Xenial specific)
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+    use: "service"
+  with_items: "{{ aerospike_enabled_services | default([]) }}"
+  when:
+    - aerospike_enabled_services | length > 0
+    - (ansible_os_family == 'Debian' and ansible_distribution_release == "xenial")

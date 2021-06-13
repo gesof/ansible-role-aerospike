@@ -1,0 +1,5 @@
+---
+- name: Ensure Aerospike is installed.
+  yum:
+    name: "{{ aerospike_package_name }}"
+    state: present

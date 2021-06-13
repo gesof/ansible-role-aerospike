@@ -1,0 +1,25 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - import_tasks: playbook-setup.yml
+
+  roles:
+    - role: gesof.aerospike
+
+  post_tasks:
+    - name: Check the installed Aerospike version.
+      command: aerospiked -V
+      register: aerospike_version_output
+      failed_when: "aerospike_version not in aerospike_version_output.stderr"
+      changed_when: false
+      tags: ['skip_ansible_lint']
+
+    - name: Verify Aerospike is running on port 3000.
+      shell: 'curl -sI localhost:3000 | grep -q "Via: .* aerospike"'
+      args:
+        warn: false
+      changed_when: false
+      tags: ['skip_ansible_lint']

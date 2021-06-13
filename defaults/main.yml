@@ -1,0 +1,23 @@
+---
+aerospike_package_name: "aerospike"
+aerospike_version: "5.6.0.5"
+
+aerospike_default_backend_host: "127.0.0.1"
+aerospike_default_backend_port: "3000"
+
+#aerospike_listen_address: ""
+#aerospike_listen_port: "80"
+#aerospike_secret: "14bac2e6-1e34-4770-8078-974373b76c90"
+aerospike_config_path: /etc/aerospike
+#aerospike_limit_nofile: 131072
+
+aerospike_admin_listen_host: "127.0.0.1"
+aerospike_admin_listen_port: "3003"
+
+aerospike_storage: "file,/opt/aerospike/data/bar.data"
+aerospike_pidfile: /var/run/aerospike/asd.pid
+
+aerospiked_extra_options: ""
+
+aerospike_enabled_services:
+  - aerospike
