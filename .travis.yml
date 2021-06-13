@@ -14,7 +14,7 @@ env:
 #    - MOLECULE_DISTRO: debian9
 
 #    - MOLECULE_DISTRO: centos7
-    MOLECULE_PLAYBOOK: playbook-41.yml
+#      MOLECULE_PLAYBOOK: playbook-41.yml
 
 install:
   # Install test dependencies.
