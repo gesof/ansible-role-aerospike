@@ -1,110 +1,80 @@
-# Configuration file for varnish
-#
-# /etc/init.d/varnish expects the variable $DAEMON_OPTS to be set from this
-# shell script fragment.
-#
+# Aerospike database configuration file.
 
-# Start varnish (only applies to Debian-based hosts)
-START=yes
+# This stanza must come first.
+service {
+	user root
+	group root
+	paxos-single-replica-limit 1 # Number of nodes where the replica count is automatically reduced to 1.
+	pidfile {{ aerospike_pidfile }}
+	service-threads {{ aerospike_service_threads }}
+	transaction-queues {{ aerospike_transaction_queues }}
+	transaction-threads-per-queue {{ aerospike_transaction_threads_per_queue }}
+	proto-fd-max 15000
+}
 
-# Locked shared memory (for ulimit -l)
-# Default log size is 82MB + header
-MEMLOCK=82000
+logging {
 
-# Maximum number of threads (for ulimit -u)
-NPROCS="unlimited"
+	# Log file must be an absolute path.
+	file {{ aerospike_logfile }} {
+		context any info
+	}
 
-# Maximum size of corefile (for ulimit -c). Default in Fedora is 0
-# DAEMON_COREFILE_LIMIT="unlimited"
+	# Send log messages to stdout
+	console {
+		context any info
+	}
+}
 
-{% if varnish_pidfile %}
-# Varnish PID file
-PIDFILE="{{ varnish_pidfile }}"
-{% endif %}
+network {
+	service {
+		address {{ aerospike_service_addresses }}
+		port {{ aerospike_default_backend_port }}
 
-# This file contains 4 alternatives, please use only one.
+		# Uncomment the following to set the `access-address` parameter to the
+		# IP address of the Docker host. This will the allow the server to correctly
+		# publish the address which applications and other nodes in the cluster to
+		# use when addressing this node.
+		# access-address <IPADDR>
+	}
 
-## Alternative 1, Minimal configuration, no VCL
-#
-# Listen on port 6081, administration on localhost:6082, and forward to
-# content server on localhost:8080.  Use a fixed-size cache file.
-#
-#DAEMON_OPTS="-a :6081 \
-#             -T localhost:6082 \
-#             -b localhost:8080 \
-#             -u varnish -g varnish \
-#             -s file,/var/lib/varnish/varnish_storage.bin,1G"
+	heartbeat {
 
+        address {{ aerospike_hb_address }}
+		# mesh is used for environments that do not support multicast
+		mode mesh
+		port {{ aerospike_hb_port }}
 
-## Alternative 2, Configuration with VCL
-#
-# Listen on port 6081, administration on localhost:6082, and forward to
-# one content server selected by the vcl file, based on the request.  Use a
-# fixed-size cache file.
-#
-#DAEMON_OPTS="-a :6081 \
-#             -T localhost:6082 \
-#             -f /etc/varnish/default.vcl \
-#             -u varnish -g varnish \
-#             -S /etc/varnish/secret \
-#             -s file,/var/lib/varnish/varnish_storage.bin,1G"
+		# use asinfo -v 'tip:host=<ADDR>;port=3002' to inform cluster of
+		# other mesh nodes
 
+		interval 150
+		timeout 10
+	}
 
-## Alternative 3, Advanced configuration
-#
-# See varnishd(1) for more information.
-#
-# # Main configuration file. You probably want to change it :)
-VARNISH_VCL_CONF={{ varnish_config_path }}/default.vcl
-#
-# # Default address and port to bind to
-# # Blank address means all IPv4 and IPv6 interfaces, otherwise specify
-# # a host name, an IPv4 dotted quad, or an IPv6 address in brackets.
-VARNISH_LISTEN_ADDRESS={{ varnish_listen_address }}
-VARNISH_LISTEN_PORT={{ varnish_listen_port }}
-#
-# # Telnet admin interface listen address and port
-VARNISH_ADMIN_LISTEN_ADDRESS={{ varnish_admin_listen_host }}
-VARNISH_ADMIN_LISTEN_PORT={{ varnish_admin_listen_port }}
-#
-# # Shared secret file for admin interface
-VARNISH_SECRET_FILE={{ varnish_config_path }}/secret
-#
-# # The minimum number of worker threads to start
-VARNISH_MIN_THREADS=50
-#
-# # The Maximum number of worker threads to start
-VARNISH_MAX_THREADS=1000
-#
-# # Idle timeout for worker threads
-VARNISH_THREAD_TIMEOUT=120
-#
-# # Backend storage specification
-VARNISH_STORAGE="{{ varnish_storage }}"
-#
-# # Default TTL used when the backend does not specify one
-VARNISH_TTL=120
-#
-# # DAEMON_OPTS is used by the init script.  If you add or remove options, make
-# # sure you update this section, too.
-DAEMON_OPTS="-a ${VARNISH_LISTEN_ADDRESS}:${VARNISH_LISTEN_PORT} \
-             -f ${VARNISH_VCL_CONF} \
-             -T ${VARNISH_ADMIN_LISTEN_ADDRESS}:${VARNISH_ADMIN_LISTEN_PORT} \
-             -t ${VARNISH_TTL} \
-             -p thread_pool_min=${VARNISH_MIN_THREADS} \
-             -p thread_pool_max=${VARNISH_MAX_THREADS} \
-             -p thread_pool_timeout=${VARNISH_THREAD_TIMEOUT} \
-{% if varnish_version is version('4.1', '<') %}
-             -u varnish -g varnish \
-{% endif %}
-{% if varnishd_extra_options %}
-             {{ varnishd_extra_options }}
-{% endif %}
-             -S ${VARNISH_SECRET_FILE} \
-             -s ${VARNISH_STORAGE}"
-#
+	fabric {
+	    address {{ aerospike_fabric_address }}
+		port {{ aerospike_fabric_port }}
+	}
 
+	info {
+	    address {{ aerospike_info_address }}
+		port {{ aerospike_info_port }}
+	}
+}
 
-## Alternative 4, Do It Yourself. See varnishd(1) for more information.
-#
-# DAEMON_OPTS=""
+namespace {{ aerospike_namespace }} {
+	replication-factor {{ aerospike_repl_factor }}
+	memory-size {{ aerospike_mem_gb }}G
+	default-ttl {{ aerospike_default_ttl }} # 5 days, use 0 to never expire/evict.
+
+	#	storage-engine memory
+
+	# To use file storage backing, comment out the line above and use the
+	# following lines instead.
+
+	storage-engine device {
+		file {{ aerospike_storage }}
+		filesize {{ aerospike_storage_gb }}G
+		data-in-memory true # Store data in memory in addition to file.
+	}
+}

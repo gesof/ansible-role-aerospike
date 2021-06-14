@@ -2,19 +2,62 @@
 aerospike_package_name: "aerospike"
 aerospike_version: "5.6.0.5"
 
-aerospike_default_backend_host: "127.0.0.1"
+# Default: Number of vCPUs
+aerospike_service_threads: "2"
+
+# Default: Number of vCPUs
+aerospike_transaction_queues: "2"
+
+# Default: 4
+aerospike_transaction_threads_per_queue: "4"
+
+# Default: /dev/null, do not log to file, log to stdout
+aerospike_logfile: "/var/log/aerospike/aerospike.log"
+
+# Default: any
+aerospike_service_addresses: "127.0.0.1"
+
+# Default: 3000
 aerospike_default_backend_port: "3000"
 
-#aerospike_listen_address: ""
-#aerospike_listen_port: "80"
-#aerospike_secret: "14bac2e6-1e34-4770-8078-974373b76c90"
+# Default: any
+aerospike_hb_address: "127.0.0.1"
+
+# Default: any
+aerospike_hb_port: "3002"
+
+# Default: any
+aerospike_fabric_address: "any"
+
+# Default: 3001
+aerospike_fabric_port: "3001"
+
+# Default: any
+aerospike_info_address: "any"
+
+# Default: 3003
+aerospike_info_port: "3003"
+
+# Default: test
+aerospike_namespace: "test"
+
+# Default: 2
+aerospike_repl_factor: "2"
+
+# Default: 1, the unit is always G (GB)
+aerospike_mem_gb: "1"
+
+# Default: 30d
+aerospike_default_ttl: "30d"
+
+# Default: 4, the unit is always G (GB)
+aerospike_storage_gb: "4"
+
+
 aerospike_config_path: /etc/aerospike
-#aerospike_limit_nofile: 131072
 
-aerospike_admin_listen_host: "127.0.0.1"
-aerospike_admin_listen_port: "3003"
-
-aerospike_storage: "file,/opt/aerospike/data/bar.data"
+# Use "$aerospike_namespace.data" as filename
+aerospike_storage: "/opt/aerospike/data/test.data"
 aerospike_pidfile: /var/run/aerospike/asd.pid
 
 aerospiked_extra_options: ""

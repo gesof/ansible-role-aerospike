@@ -1,4 +1,58 @@
-# Aerospike environment configuration description. This was derived from
+# Aerospike environment configuration description.
+
+# Default: Number of vCPUs
+SERVICE_THREADS={{ aerospike_service_threads }}
+
+# Default: Number of vCPUs
+TRANSACTION_QUEUES={{ aerospike_transaction_queues }}
+
+# Default: 4
+TRANSACTION_THREADS_PER_QUEUE={{ aerospike_transaction_threads_per_queue }}
+
+# Default: /dev/null, do not log to file, log to stdout
+LOGFILE={{ aerospike_logfile }}
+
+# Default: any
+SERVICE_ADDRESS={{ aerospike_service_addresses }}
+
+# Default: 3000
+SERVICE_PORT={{ aerospike_default_backend_port }}
+
+# Default: any
+HB_ADDRESS={{ aerospike_hb_address }}
+
+# Default: any
+HB_PORT={{ aerospike_hb_port }}
+
+# Default: any
+FABRIC_ADDRESS={{ aerospike_fabric_address }}
+
+# Default: 3001
+FABRIC_PORT={{ aerospike_fabric_port }}
+
+# Default: any
+INFO_ADDRESS={{ aerospike_info_address }}
+
+# Default: 3003
+INFO_PORT={{ aerospike_info_port }}
+
+# Default: test
+NAMESPACE={{ aerospike_namespace }}
+
+# Default: 2
+REPL_FACTOR={{ aerospike_repl_factor }}
+
+# Default: 1, the unit is always G (GB)
+MEM_GB={{ aerospike_mem_gb }}
+
+# Default: 30d
+DEFAULT_TTL={{ aerospike_default_ttl }}
+
+# Default: 4, the unit is always G (GB)
+STORAGE_GB={{ aerospike_storage_gb }}
+
+
+This was derived from
 # the old style sysconfig/defaults settings
 
 # Default address and port to bind to. Blank address means all IPv4

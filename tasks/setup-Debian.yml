@@ -27,9 +27,26 @@
   when: aerospike_source.changed
   register: aerospike_source_unpack
 
-- name: Installing Aerospike
+#  https://github.com/aerospike/aerospike-server.docker/blob/c5c6355c81b03b1e7cf6d817dfc053baabd4b7b6/Dockerfile
+- name: Installing Aerospike server
   become: yes
   shell: asinstall
   args:
     chdir: "/tmp/aerospike-server-community-{{ aerospike_version }}-ubuntu{{ ansible_distribution_version }}"
   when: aerospike_source_unpack.changed
+
+- name: Create required Aerospike dirs
+  become: yes
+  file:
+    path: /var/log/aerospike
+    state: directory
+    owner: root
+    mode: 0755
+
+- name: Create required Aerospike dirs
+  become: yes
+  file:
+    path: /var/run/aerospike
+    state: directory
+    owner: root
+    mode: 0755
